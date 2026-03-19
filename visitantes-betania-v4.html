@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Igreja Betânia — Sistema de Visitantes</title>
+<style>
+:root{
+  --navy:#1a3352;--navy2:#254a73;--gold:#c9a227;--gold2:#e8b830;
+  --cream:#faf8f4;--white:#fff;--gray:#6b7280;--light:#f0f4f9;
+  --border:#dde4ef;--green:#059669;--green-l:#d1fae5;
+  --rose:#ec4899;--rose-l:#fce7f3;--rose-d:#9d174d;
+  --blue:#3b82f6;--blue-l:#dbeafe;--blue-d:#1d4ed8;
+  --amber:#f59e0b;--amber-l:#fef3c7;--amber-d:#92400e;
+  --purple:#8b5cf6;--purple-l:#ede9fe;--purple-d:#5b21b6;
+  --indigo:#6366f1;--indigo-l:#e0e7ff;
+  --shadow:0 2px 12px rgba(26,51,82,.10);
+  --shadow-lg:0 8px 32px rgba(26,51,82,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Georgia,'Times New Roman',serif;background:var(--cream);color:#1f2937;min-height:100vh;}
+
+/* ── NAV ── */
+#nav{background:linear-gradient(135deg,var(--navy),var(--navy2));position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(26,51,82,.4);}
+.nav-in{max-width:1100px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:58px;}
+.nav-brand{display:flex;align-items:center;gap:10px;}
+.nav-cross{font-size:22px;color:var(--gold);}
+.nav-title{color:#fff;font-size:18px;font-weight:700;}
+.nav-sub{color:#93c5fd;font-size:11px;margin-top:1px;}
+.nav-btns{display:flex;gap:4px;}
+.nb{padding:8px 13px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-family:inherit;background:transparent;color:rgba(255,255,255,.75);transition:all .2s;}
+.nb:hover,.nb.on{background:rgba(201,162,39,.22);color:#fde68a;font-weight:700;}
+
+/* ── PAGES ── */
+.pg{display:none;}
+.pg.on{display:block;animation:fi .3s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* ── FORM ── */
+.fw{max-width:500px;margin:0 auto;padding:28px 16px 80px;}
+.hero{background:linear-gradient(140deg,var(--navy) 0%,var(--navy2) 55%,#2d6aad 100%);border-radius:22px;padding:34px 26px;text-align:center;margin-bottom:26px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:rgba(201,162,39,.08);}
+.hc{font-size:38px;margin-bottom:8px;position:relative;z-index:1;}
+.ht{color:#fff;font-size:26px;font-weight:700;margin-bottom:8px;line-height:1.2;position:relative;z-index:1;}
+.hl{width:36px;height:2px;background:var(--gold);margin:10px auto;border-radius:2px;}
+.hs{color:#bfd7f5;font-size:14px;line-height:1.7;position:relative;z-index:1;}
+.fc{background:var(--white);border-radius:16px;padding:22px 18px;margin-bottom:13px;box-shadow:var(--shadow);border:1px solid var(--border);}
+.ct{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;}
+.fi{margin-bottom:18px;}
+.fi:last-child{margin-bottom:0;}
+.lbl{display:block;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:7px;}
+input[type=text],input[type=tel],input[type=url],textarea{width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid var(--border);font-size:15px;font-family:inherit;background:#fafbfd;outline:none;color:#1f2937;transition:border .2s;}
+input:focus,textarea:focus{border-color:var(--navy2);box-shadow:0 0 0 3px rgba(37,74,115,.1);}
+textarea{resize:vertical;min-height:76px;}
+.rg{display:flex;gap:8px;flex-wrap:wrap;}
+.rb{padding:10px 18px;border-radius:50px;border:2px solid var(--border);background:var(--white);color:#374151;font-size:14px;cursor:pointer;font-family:inherit;transition:all .2s;}
+.rb.on{border-color:var(--navy);background:var(--navy);color:#fff;font-weight:700;}
+.go{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.gob{padding:11px 10px;border-radius:10px;border:2px solid var(--border);background:var(--white);color:#374151;font-size:13px;cursor:pointer;text-align:center;font-family:inherit;transition:all .2s;}
+.gob.on{border-color:var(--gold);background:rgba(201,162,39,.09);color:var(--amber-d);font-weight:700;}
+.cb{display:flex;align-items:flex-start;gap:11px;background:#f0f5ff;border-radius:12px;padding:14px 15px;border:1.5px solid #c7d7f0;}
+.cb input[type=checkbox]{width:18px;height:18px;margin-top:2px;cursor:pointer;accent-color:var(--navy);flex-shrink:0;}
+.cb label{font-size:13px;color:#374151;line-height:1.6;cursor:pointer;}
+.sbtn{width:100%;padding:15px;border-radius:13px;border:none;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1000;font-size:17px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 5px 18px rgba(201,162,39,.35);transition:transform .15s,box-shadow .2s;margin-top:4px;}
+.sbtn:hover{transform:translateY(-2px);box-shadow:0 9px 26px rgba(201,162,39,.45);}
+.err{background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:12px 14px;color:#991b1b;font-size:14px;margin-bottom:14px;}
+.hid{display:none!important;}
+
+/* ── SUCESSO ── */
+.sw{max-width:400px;margin:70px auto 0;padding:0 16px;text-align:center;}
+.sc{background:var(--white);border-radius:26px;padding:48px 28px;box-shadow:var(--shadow-lg);}
+.si{font-size:64px;margin-bottom:14px;animation:pop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+
+/* ── QR ── */
+.qw{max-width:560px;margin:36px auto 0;padding:0 16px 60px;}
+.qc{background:var(--white);border-radius:26px;padding:40px 30px;text-align:center;box-shadow:var(--shadow-lg);border:1px solid var(--border);}
+#qr-box{display:inline-block;padding:16px;background:#fff;border-radius:16px;box-shadow:0 4px 22px rgba(26,51,82,.16);border:3px solid var(--navy);margin:4px auto 20px;}
+.qbanner{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:14px;padding:20px 24px;margin:18px 0;text-align:left;}
+.quses{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:14px 0;}
+.qu{background:var(--light);border-radius:9px;padding:9px;font-size:12px;color:var(--navy);font-weight:600;}
+
+/* ── ADMIN ── */
+.aw{max-width:1100px;margin:0 auto;padding:22px 16px 80px;}
+.atabs{display:flex;gap:4px;background:var(--white);border-radius:13px;padding:5px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:22px;overflow-x:auto;}
+.tb{padding:10px 16px;border-radius:9px;border:none;cursor:pointer;font-size:13px;font-family:inherit;font-weight:500;background:transparent;color:var(--gray);transition:all .2s;white-space:nowrap;}
+.tb.on{background:var(--navy);color:#fff;font-weight:700;}
+.tp{display:none;}
+.tp.on{display:block;animation:fi .25s ease;}
+
+/* Stats */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px;margin-bottom:20px;}
+.sc2{background:var(--white);border-radius:13px;padding:15px 12px;text-align:center;border:2px solid transparent;box-shadow:var(--shadow);}
+.sn{font-size:36px;font-weight:700;line-height:1;}
+.sl{font-size:10px;color:var(--gray);margin-top:4px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+
+/* Filters */
+.fr{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+.fb{padding:7px 13px;border-radius:50px;border:1.5px solid var(--border);background:var(--white);color:var(--gray);font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;transition:all .2s;}
+.fb:hover{border-color:var(--navy2);color:var(--navy);}
+.fb.on{border-color:var(--navy);background:var(--navy);color:#fff;}
+.si2{padding:9px 15px;border-radius:50px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;outline:none;min-width:200px;background:var(--white);}
+.si2:focus{border-color:var(--navy2);}
+
+/* ── VISITOR CARDS ── */
+.vlist{display:flex;flex-direction:column;gap:12px;}
+.vcard{background:var(--white);border-radius:14px;padding:16px 18px;border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;}
+
+/* Seção sempre visível */
+.v-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.v-nome{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:5px;}
+.v-badges{display:flex;flex-wrap:wrap;gap:5px;align-items:center;}
+.badge{display:inline-block;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;}
+.badge-ev{background:var(--blue-l);color:var(--blue-d);}
+.badge-neo{background:var(--amber-l);color:var(--amber-d);}
+.badge-status{display:inline-block;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;}
+.badge-cat{display:inline-block;padding:3px 9px;border-radius:50px;font-size:11px;font-weight:700;}
+.cC{background:var(--rose-l);color:var(--rose-d);}
+.cD{background:var(--purple-l);color:var(--purple-d);}
+.cE{background:var(--green-l);color:#065f46;}
+.cEQ{background:var(--indigo-l);color:#4338ca;}
+.v-equipe{background:var(--light);padding:4px 12px;border-radius:50px;font-size:12px;color:var(--navy);font-weight:700;white-space:nowrap;}
+
+/* Linha celular */
+.v-cel-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;background:#f0f7ff;border-radius:10px;padding:10px 13px;margin-bottom:10px;border:1px solid #bfdbfe;}
+.v-cel-num{font-size:16px;font-weight:700;color:var(--navy);}
+.v-cel-data{font-size:12px;color:var(--gray);}
+.v-btns{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto;}
+
+/* Botões */
+.btn{padding:9px 16px;border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:700;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:5px;text-decoration:none;}
+.btn:hover{opacity:.85;transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.btn-navy{background:var(--navy);color:#fff;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1000;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-ghost{background:var(--light);color:#374151;}
+.btn-sm{padding:7px 13px;font-size:12px;}
+
+/* Oração box */
+.v-oracao{background:var(--rose-l);border-radius:10px;padding:11px 14px;margin-bottom:10px;border-left:4px solid var(--rose);display:flex;gap:9px;align-items:flex-start;}
+.v-oracao-label{font-size:11px;font-weight:700;color:var(--rose-d);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.v-oracao-text{font-size:14px;color:#374151;line-height:1.5;}
+
+/* Toggle expandir */
+.v-toggle{width:100%;background:none;border:1px dashed #d1d5db;border-radius:8px;padding:7px;font-size:12px;color:var(--gray);cursor:pointer;font-family:inherit;transition:all .2s;margin-top:2px;}
+.v-toggle:hover{background:var(--light);border-color:#9ca3af;}
+
+/* Painel expandido */
+.v-detail{border-top:1px solid var(--border);margin-top:14px;padding-top:14px;}
+.dg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
+.dil{font-size:10px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.div2{font-size:14px;font-weight:600;color:#1f2937;}
+.msg-box{background:#f0f7ff;border-radius:12px;padding:14px 16px;border:1px solid #bfdbfe;font-size:14px;line-height:1.7;color:var(--navy);margin-bottom:10px;font-style:italic;white-space:pre-wrap;}
+.cr{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+.ci{flex:1;min-width:130px;}
+.cil{font-size:10px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.sel-input{padding:9px 11px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;background:var(--white);cursor:pointer;outline:none;width:100%;}
+.sel-input:focus{border-color:var(--navy2);}
+.nta{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;resize:vertical;min-height:60px;outline:none;}
+.nta:focus{border-color:var(--navy2);}
+
+/* Reports */
+.rg2{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+.rc{background:var(--white);border-radius:13px;padding:19px;border:1px solid var(--border);box-shadow:var(--shadow);}
+.rtit{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:15px;}
+.brow{margin-bottom:11px;}
+.blr{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;}
+.btr{background:#f3f4f6;border-radius:5px;height:26px;overflow:hidden;}
+.bf{height:100%;border-radius:5px;display:flex;align-items:center;padding-left:9px;transition:width .6s ease;}
+.bf span{color:#fff;font-size:11px;font-weight:700;}
+.srow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f3f4f6;}
+.cad{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:9px;}
+.cad-i{background:var(--light);border-radius:11px;padding:13px;text-align:center;border:1px solid var(--border);}
+.cad-d{font-size:11px;font-weight:900;color:var(--gold);text-transform:uppercase;letter-spacing:1px;}
+.cad-ic{font-size:20px;margin:5px 0;}
+.cad-t{font-size:11px;color:var(--gray);}
+
+/* Mensagens */
+.mt{background:var(--white);border-radius:13px;padding:19px;border:1px solid var(--border);margin-bottom:13px;box-shadow:var(--shadow);}
+.rrow{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid #f3f4f6;}
+
+/* Equipes */
+.tg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:13px;margin-bottom:20px;}
+.tc{background:var(--white);border-radius:13px;padding:18px 15px;text-align:center;border:1px solid var(--border);box-shadow:var(--shadow);}
+
+/* Toast */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:#fff;padding:11px 22px;border-radius:50px;font-size:14px;font-weight:700;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+
+.info{background:#f0f5ff;border-radius:11px;padding:13px 16px;border:1px solid #c7d7f0;font-size:13px;color:var(--navy);margin-bottom:16px;}
+
+@media(max-width:600px){
+  .nav-title{font-size:15px;}.nb{padding:7px 9px;font-size:11px;}
+  .dg{grid-template-columns:1fr 1fr;}.rg2{grid-template-columns:1fr;}
+  .quses{grid-template-columns:1fr 1fr;}
+  .v-btns{margin-left:0;width:100%;}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-in">
+    <div class="nav-brand">
+      <span class="nav-cross">✝</span>
+      <div><div class="nav-title">Igreja Betânia</div><div class="nav-sub">Sistema de Visitantes</div></div>
+    </div>
+    <div class="nav-btns">
+      <button class="nb on" id="nb-cadastro" onclick="showPg('cadastro')">📋 Cadastro</button>
+      <button class="nb" id="nb-qrcode" onclick="showPg('qrcode')">📱 QR Code</button>
+      <button class="nb" id="nb-admin" onclick="showPg('admin')">⚙️ Admin</button>
+    </div>
+  </div>
+</nav>
+
+<div id="toast"></div>
+
+<!-- ═══════ CADASTRO ═══════ -->
+<div id="pg-cadastro" class="pg on">
+  <div class="fw">
+    <div class="hero">
+      <div class="hc">✝</div>
+      <div class="ht">Seja muito bem-vindo!</div>
+      <div class="hl"></div>
+      <div class="hs">É uma alegria ter você conosco hoje. Preencha este formulário para que possamos acolhê-lo ainda melhor.</div>
+    </div>
+    <div id="ferr" class="err hid"></div>
+
+    <div class="fc">
+      <div class="ct">👤 Seus dados</div>
+      <div class="fi">
+        <label class="lbl" for="fnome">Nome completo *</label>
+        <input type="text" id="fnome" placeholder="Seu nome completo"/>
+      </div>
+      <div class="fi">
+        <label class="lbl" for="fcel">Celular com WhatsApp *</label>
+        <input type="tel" id="fcel" placeholder="(11) 9 0000-0000"/>
+      </div>
+    </div>
+
+    <div class="fc">
+      <div class="ct">🙏 Sua fé</div>
+      <div class="fi">
+        <label class="lbl">Você já é evangélico(a)? *</label>
+        <div class="rg" id="fev">
+          <button type="button" class="rb" data-v="sim" onclick="pick('fev',this)">Sim</button>
+          <button type="button" class="rb" data-v="nao" onclick="pick('fev',this)">Não</button>
+        </div>
+      </div>
+      <div class="fi">
+        <label class="lbl">Já congrega em alguma igreja? *</label>
+        <div class="rg" id="fcong">
+          <button type="button" class="rb" data-v="sim" onclick="pick('fcong',this);toggleIg(this)">Sim</button>
+          <button type="button" class="rb" data-v="nao" onclick="pick('fcong',this);toggleIg(this)">Não</button>
+        </div>
+      </div>
+      <div class="fi hid" id="figwrap">
+        <label class="lbl" for="fig">Qual igreja? (opcional)</label>
+        <input type="text" id="fig" placeholder="Nome da igreja"/>
+      </div>
+    </div>
+
+    <div class="fc">
+      <div class="ct">💛 Acompanhamento e oração</div>
+      <div class="fi">
+        <label class="lbl">Deseja receber acompanhamento da nossa equipe? *</label>
+        <div class="rg" id="facomp">
+          <button type="button" class="rb" data-v="sim" onclick="pick('facomp',this)">Sim</button>
+          <button type="button" class="rb" data-v="nao" onclick="pick('facomp',this)">Não</button>
+        </div>
+      </div>
+      <div class="fi">
+        <label class="lbl" for="foracao">Tem algum pedido de oração? (opcional)</label>
+        <textarea id="foracao" placeholder="Compartilhe com a gente, vamos orar por você..."></textarea>
+      </div>
+    </div>
+
+    <div class="fc">
+      <div class="ct">🌱 Conexão e comunidade</div>
+      <div class="fi">
+        <label class="lbl">Como você conheceu nossa igreja? *</label>
+        <div class="go" id="fcomo">
+          <button type="button" class="gob" data-v="primeiro" onclick="pickG('fcomo',this)">Primeira visita</button>
+          <button type="button" class="gob" data-v="convite" onclick="pickG('fcomo',this)">Convite de amigo</button>
+          <button type="button" class="gob" data-v="redes" onclick="pickG('fcomo',this)">Redes sociais</button>
+          <button type="button" class="gob" data-v="evento" onclick="pickG('fcomo',this)">Evento especial</button>
+          <button type="button" class="gob" data-v="perto" onclick="pickG('fcomo',this)">Moro perto</button>
+          <button type="button" class="gob" data-v="outro" onclick="pickG('fcomo',this)">Outro</button>
+        </div>
+      </div>
+      <div class="fi">
+        <label class="lbl">Deseja participar de um pequeno grupo / célula? *</label>
+        <div class="rg" id="fcelula">
+          <button type="button" class="rb" data-v="sim" onclick="pick('fcelula',this)">Sim</button>
+          <button type="button" class="rb" data-v="nao" onclick="pick('fcelula',this)">Não</button>
+          <button type="button" class="rb" data-v="qs" onclick="pick('fcelula',this)">Quero saber mais</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc" style="margin-bottom:18px;">
+      <div class="cb">
+        <input type="checkbox" id="fconsent"/>
+        <label for="fconsent">Autorizo o contato da igreja por WhatsApp para acompanhamento, oração e informações sobre programações.</label>
+      </div>
+    </div>
+    <button type="button" class="sbtn" onclick="enviar()">✝ Enviar Cadastro</button>
+  </div>
+</div>
+
+<!-- ═══════ SUCESSO ═══════ -->
+<div id="pg-sucesso" class="pg">
+  <div class="sw">
+    <div class="sc">
+      <div class="si">🙌</div>
+      <div style="font-size:26px;font-weight:700;color:var(--navy);margin-bottom:10px;">Cadastro realizado!</div>
+      <div style="color:var(--gray);font-size:15px;line-height:1.8;margin-bottom:26px;">Sua visita é muito especial para nós.<br/>Em breve nossa equipe entrará em contato.<br/><br/><strong style="color:var(--gold);">Deus te abençoe! ✝</strong></div>
+      <button type="button" class="sbtn" onclick="showPg('cadastro')">Novo Cadastro</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ QR CODE ═══════ -->
+<div id="pg-qrcode" class="pg">
+  <div class="qw">
+    <div class="qc">
+      <div style="font-size:30px;margin-bottom:6px;">✝</div>
+      <h2 style="color:var(--navy);margin-bottom:5px;">QR Code de Cadastro</h2>
+      <p style="color:var(--gray);font-size:13px;margin-bottom:18px;">Cole o link do site abaixo e clique em Gerar</p>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <input type="url" id="qurl" placeholder="https://melquibispo.github.io/Betania/..." style="flex:1;min-width:200px;font-size:13px;padding:11px 13px;border-radius:10px;border:1.5px solid var(--border);font-family:inherit;outline:none;"/>
+        <button type="button" class="btn btn-navy" onclick="gerarQR()" style="padding:11px 18px;">🔄 Gerar QR</button>
+      </div>
+      <div id="qr-box">
+        <div id="qrloading" style="width:200px;height:200px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--gray);font-size:13px;">
+          <div style="font-size:32px;">📱</div>
+          <div>Cole o link e clique em Gerar</div>
+        </div>
+        <img id="qrimg" src="" alt="QR Code" style="width:200px;height:200px;display:none;"/>
+      </div>
+      <div class="qbanner">
+        <div style="font-size:19px;font-weight:700;color:#fff;margin-bottom:5px;">✝ É sua primeira vez conosco?</div>
+        <div style="color:#93c5fd;font-size:14px;line-height:1.5;">Faça seu cadastro aqui e receba nosso acolhimento especial.</div>
+        <div id="qurlshow" style="margin-top:9px;font-size:12px;background:rgba(255,255,255,.15);border-radius:7px;padding:5px 11px;display:inline-block;color:#fde68a;word-break:break-all;font-family:monospace;">—</div>
+      </div>
+      <div class="quses">
+        <div class="qu">📺 Telão</div><div class="qu">🪧 Banner</div><div class="qu">🃏 Cartão</div>
+        <div class="qu">📱 WhatsApp</div><div class="qu">📸 Redes</div><div class="qu">🖥️ Secretaria</div>
+      </div>
+      <div style="background:#f0f5ff;border-radius:12px;padding:14px 16px;margin-top:14px;text-align:left;font-size:13px;color:var(--navy);">
+        <strong>🔗 Seu link:</strong><br/>
+        <code style="word-break:break-all;font-size:12px;color:#4338ca;">https://melquibispo.github.io/Betania/visitantes-betania-v3.html</code>
+      </div>
+      <div style="display:flex;gap:9px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-navy" onclick="imprimirQR()">🖨️ Imprimir</button>
+        <button type="button" class="btn btn-gold" onclick="abrirQR()">🔗 Abrir imagem QR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ ADMIN ═══════ -->
+<div id="pg-admin" class="pg">
+  <div class="aw">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <h2 style="color:var(--navy);font-size:24px;">Painel Administrativo</h2>
+        <p style="color:var(--gray);font-size:13px;margin-top:2px;">Igreja Betânia — Gestão de Visitantes</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-ghost" onclick="exportCSV()">📥 Exportar CSV</button>
+        <button type="button" class="btn btn-ghost" onclick="limparDados()" style="color:#991b1b;">🗑️ Limpar</button>
+      </div>
+    </div>
+
+    <div class="atabs">
+      <button type="button" class="tb on" id="tab-vis" onclick="showTab('visitantes',this)">👥 Visitantes</button>
+      <button type="button" class="tb" id="tab-rel" onclick="showTab('relatorios',this)">📊 Relatórios</button>
+      <button type="button" class="tb" id="tab-msg" onclick="showTab('mensagens',this)">💬 Mensagens</button>
+      <button type="button" class="tb" id="tab-eq" onclick="showTab('equipes',this)">🏛 Equipes</button>
+    </div>
+
+    <!-- TAB VISITANTES -->
+    <div id="tp-visitantes" class="tp on">
+      <div class="sg" id="statsbox"></div>
+      <div class="fr">
+        <input class="si2" id="busca" placeholder="🔍 Buscar por nome ou telefone" oninput="renderV()"/>
+      </div>
+      <div class="fr" id="tipo-filters">
+        <button type="button" class="fb on" data-f="todos" onclick="setFT('todos',this)">Todos</button>
+        <button type="button" class="fb" data-f="ev" onclick="setFT('ev',this)">✝ Evangélico</button>
+        <button type="button" class="fb" data-f="neo" onclick="setFT('neo',this)">🌱 Não Evang.</button>
+        <button type="button" class="fb" data-f="oracao" onclick="setFT('oracao',this)">🙏 Com Oração</button>
+        <button type="button" class="fb" data-f="acomp" onclick="setFT('acomp',this)">👋 Acompanham.</button>
+        <button type="button" class="fb" data-f="celulaSim" onclick="setFT('celulaSim',this)">🏠 Célula (Sim)</button>
+        <button type="button" class="fb" data-f="celulaQs" onclick="setFT('celulaQs',this)">❓ Quer Saber Mais</button>
+      </div>
+      <div class="fr" id="stfilters"></div>
+      <div class="vlist" id="vlist"></div>
+    </div>
+
+    <!-- TAB RELATÓRIOS -->
+    <div id="tp-relatorios" class="tp">
+      <div class="rg2" id="relbox"></div>
+      <div class="rc" style="margin-top:15px;">
+        <div class="rtit">📅 Cadência de Acompanhamento</div>
+        <div class="cad">
+          <div class="cad-i"><div class="cad-d">Dia 0</div><div class="cad-ic">🌟</div><div class="cad-t">Boas-vindas</div></div>
+          <div class="cad-i"><div class="cad-d">Dia 1</div><div class="cad-ic">💛</div><div class="cad-t">Reforço</div></div>
+          <div class="cad-i"><div class="cad-d">Dia 3</div><div class="cad-ic">✝</div><div class="cad-t">Msg personalizada</div></div>
+          <div class="cad-i"><div class="cad-d">Dia 5</div><div class="cad-ic">📖</div><div class="cad-t">Versículo</div></div>
+          <div class="cad-i"><div class="cad-d">Dia 7</div><div class="cad-ic">🏛</div><div class="cad-t">Convite culto</div></div>
+          <div class="cad-i"><div class="cad-d">Dia 14</div><div class="cad-ic">🤝</div><div class="cad-t">Checagem</div></div>
+          <div class="cad-i"><div class="cad-d">Dia 21</div><div class="cad-ic">🏠</div><div class="cad-t">Integração</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB MENSAGENS -->
+    <div id="tp-mensagens" class="tp">
+      <div class="info">💡 Substitua <code>[Nome]</code> pelo primeiro nome do visitante antes de enviar.</div>
+      <div id="msgbox"></div>
+      <div class="rc">
+        <div class="rtit" style="color:#065f46;">🔗 Encaminhamento por Perfil</div>
+        <div class="rrow"><span class="badge badge-ev">Evangélico</span><span style="flex:1;font-size:13px;margin-left:8px;">Visitante já cristão</span><span style="font-size:12px;font-weight:700;color:var(--blue-d);">→ Acolhimento</span></div>
+        <div class="rrow"><span class="badge badge-neo">Não Evang.</span><span style="flex:1;font-size:13px;margin-left:8px;">Primeira aproximação</span><span style="font-size:12px;font-weight:700;color:var(--amber-d);">→ Consolidação</span></div>
+        <div class="rrow"><span class="badge cC">Oração</span><span style="flex:1;font-size:13px;margin-left:8px;">Pedido de oração</span><span style="font-size:12px;font-weight:700;color:var(--rose-d);">→ Intercessão</span></div>
+        <div class="rrow" style="border:none;"><span class="badge cE">Célula</span><span style="flex:1;font-size:13px;margin-left:8px;">Interesse em grupo</span><span style="font-size:12px;font-weight:700;color:#065f46;">→ Líder de Célula</span></div>
+      </div>
+    </div>
+
+    <!-- TAB EQUIPES -->
+    <div id="tp-equipes" class="tp">
+      <div class="tg" id="teambox"></div>
+      <div class="rc">
+        <div class="rtit">📋 Regras de Encaminhamento</div>
+        <div class="rrow"><span style="font-size:17px;">🙏</span><span style="font-size:13px;flex:1;margin-left:8px;">Possui pedido de oração</span><span class="badge cC">→ Intercessão</span></div>
+        <div class="rrow"><span style="font-size:17px;">🌱</span><span style="font-size:13px;flex:1;margin-left:8px;">Não evang. + aceita acompanham.</span><span class="badge badge-neo">→ Consolidação</span></div>
+        <div class="rrow"><span style="font-size:17px;">🏠</span><span style="font-size:13px;flex:1;margin-left:8px;">Interesse em célula</span><span class="badge cE">→ Célula</span></div>
+        <div class="rrow"><span style="font-size:17px;">✝</span><span style="font-size:13px;flex:1;margin-left:8px;">Cuidado pastoral</span><span class="badge badge-ev">→ Pastoral</span></div>
+        <div class="rrow" style="border:none;"><span style="font-size:17px;">👋</span><span style="font-size:13px;flex:1;margin-left:8px;">Visitante geral</span><span class="badge" style="background:#f3f4f6;color:#374151;">→ Recepção</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ JAVASCRIPT ═══════ -->
+<script>
+// ── DADOS ────────────────────────────────────────────────
+const STS=[
+  {v:'novo',l:'Novo Visitante',c:'#3b82f6'},
+  {v:'contato',l:'1º Contato',c:'#8b5cf6'},
+  {v:'oracao',l:'Em Oração',c:'#ec4899'},
+  {v:'aguardando',l:'Aguardando',c:'#f59e0b'},
+  {v:'celula',l:'Enc. Célula',c:'#10b981'},
+  {v:'lider',l:'Enc. Líder',c:'#6366f1'},
+  {v:'consolidado',l:'Consolidado',c:'#059669'},
+  {v:'naoResp',l:'Não Respondeu',c:'#9ca3af'},
+  {v:'finalizado',l:'Finalizado',c:'#374151'},
+];
+const EQS=['Recepção','Consolidação','Intercessão','Célula','Pastoral'];
+const EICONS={Recepção:'👋',Consolidação:'🌱',Intercessão:'🙏',Célula:'🏠',Pastoral:'✝'};
+const MSGS={
+  ev:'Olá, [Nome]! 🙏\n\nQue alegria receber você em nossa igreja. Foi uma honra ter sua presença conosco.\n\nEstamos à disposição para servir no que precisar. Se desejar, podemos apresentar melhor nossa programação.\n\nDeus te abençoe! ✝',
+  neo:'Olá, [Nome]! 😊\n\nFoi muito especial receber você em nossa igreja. Esperamos que tenha se sentido acolhido.\n\nEstamos aqui para servir, orar e caminhar com você. Será sempre bem-vindo!\n\nUm abraço! 💛',
+  oracao:'Olá, [Nome]! 💛\n\nRecebemos seu pedido de oração com muito carinho. Saiba que estaremos orando pela sua vida.\n\nDeus cuida de cada detalhe e você não está sozinho. Estamos aqui! 🙏',
+  celula:'Olá, [Nome]! ✨\n\nFicamos felizes com seu interesse em participar de uma célula!\n\nÉ um ambiente de comunhão, cuidado e crescimento espiritual. Podemos apresentar a célula mais próxima. Que tal conversarmos? 🏠',
+  bv:'Olá, [Nome]! 🌟\n\nBem-vindo(a) à nossa família! Sua visita foi um presente para nós.\n\nDeus tem um plano maravilhoso para sua vida. Estamos aqui sempre que precisar.\n\nAbraço em Cristo! 💙 ✝',
+};
+const SAMPLE=[
+  {id:1,nome:'Ana Paula Ferreira',cel:'11987654321',ev:true,cong:false,ig:'',acomp:true,oracao:'Preciso de sabedoria para uma decisão importante',como:'convite',celula:'qs',data:'2026-03-15',st:'contato',eq:'Consolidação',notas:'Muito receptiva',msgs:[{d:0,ok:true}]},
+  {id:2,nome:'Carlos Mendes',cel:'11912345678',ev:false,cong:false,ig:'',acomp:true,oracao:'Restauração familiar urgente',como:'primeiro',celula:'sim',data:'2026-03-15',st:'oracao',eq:'Intercessão',notas:'Veio com a esposa',msgs:[]},
+  {id:3,nome:'Mariana Costa',cel:'11976543210',ev:true,cong:true,ig:'Igreja Batista Central',acomp:false,oracao:'',como:'redes',celula:'nao',data:'2026-03-08',st:'consolidado',eq:'Recepção',notas:'',msgs:[{d:0,ok:true},{d:7,ok:true}]},
+  {id:4,nome:'Roberto Silva',cel:'11965432109',ev:false,cong:false,ig:'',acomp:true,oracao:'',como:'evento',celula:'sim',data:'2026-03-10',st:'celula',eq:'Célula',notas:'Grupo de jovens',msgs:[{d:0,ok:true}]},
+  {id:5,nome:'Fernanda Lima',cel:'11954321098',ev:true,cong:false,ig:'',acomp:true,oracao:'Saúde da minha mãe',como:'perto',celula:'qs',data:'2026-03-12',st:'novo',eq:'Recepção',notas:'',msgs:[]},
+];
+
+let vs = JSON.parse(localStorage.getItem('betania_v4')||'null') || SAMPLE;
+let openId = null, ft = 'todos', fs = 'todos';
+function save(){ localStorage.setItem('betania_v4', JSON.stringify(vs)); }
+
+// ── NAVEGAÇÃO ────────────────────────────────────────────
+function showPg(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  ['cadastro','qrcode','admin'].forEach(p=>{
+    document.getElementById('nb-'+p).classList.toggle('on', p===id);
+  });
+  if(id==='admin'){ renderStats(); renderV(); renderRel(); renderMsgs(); renderTeams(); renderStFilters(); }
+}
+function showTab(id,btn){
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tp-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ── FORMULÁRIO ───────────────────────────────────────────
+function pick(gid,btn){
+  document.querySelectorAll('#'+gid+' .rb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function pickG(gid,btn){
+  document.querySelectorAll('#'+gid+' .gob').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function toggleIg(btn){
+  document.getElementById('figwrap').classList.toggle('hid', btn.dataset.v!=='sim');
+}
+function getR(id){ const b=document.querySelector('#'+id+' .rb.on'); return b?b.dataset.v:''; }
+function getG(id){ const b=document.querySelector('#'+id+' .gob.on'); return b?b.dataset.v:''; }
+
+function enviar(){
+  const nome=document.getElementById('fnome').value.trim();
+  const cel=document.getElementById('fcel').value.trim();
+  const ev=getR('fev'), cong=getR('fcong'), acomp=getR('facomp');
+  const como=getG('fcomo'), celula=getR('fcelula');
+  const consent=document.getElementById('fconsent').checked;
+  const err=document.getElementById('ferr');
+  if(!nome||!cel||!ev||!cong||!acomp||!como||!celula){
+    err.textContent='⚠️ Preencha todos os campos obrigatórios.';
+    err.classList.remove('hid'); err.scrollIntoView({behavior:'smooth'}); return;
+  }
+  if(!consent){
+    err.textContent='⚠️ Autorize o contato pelo WhatsApp para prosseguir.';
+    err.classList.remove('hid'); return;
+  }
+  err.classList.add('hid');
+  const oracao=document.getElementById('foracao').value.trim();
+  const isEv=ev==='sim';
+  const v={
+    id:Date.now(), nome, cel, ev:isEv, cong:cong==='sim',
+    ig:document.getElementById('fig').value.trim(),
+    acomp:acomp==='sim', oracao, como, celula,
+    data:new Date().toISOString().split('T')[0], st:'novo',
+    eq: oracao?'Intercessão': !isEv&&acomp==='sim'?'Consolidação': (celula==='sim'||celula==='qs')?'Célula':'Recepção',
+    notas:'', msgs:[]
+  };
+  vs.unshift(v); save();
+  ['fnome','fcel','foracao','fig'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('.rb.on,.gob.on').forEach(b=>b.classList.remove('on'));
+  document.getElementById('fconsent').checked=false;
+  document.getElementById('figwrap').classList.add('hid');
+  showPg('sucesso');
+}
+
+// ── QR CODE ──────────────────────────────────────────────
+let qrUrl='';
+function gerarQR(){
+  const url=document.getElementById('qurl').value.trim();
+  if(!url||!url.startsWith('http')){ toast('⚠️ Cole um link válido começando com https://'); return; }
+  qrUrl=url;
+  document.getElementById('qurlshow').textContent=url;
+  const img=document.getElementById('qrimg');
+  const loading=document.getElementById('qrloading');
+  img.style.display='none';
+  loading.style.display='flex';
+  loading.innerHTML='<div style="font-size:28px;animation:spin 1s linear infinite">⟳</div><div>Gerando...</div>';
+  const src=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}&color=1a3352&bgcolor=ffffff&margin=2`;
+  img.onload=()=>{ loading.style.display='none'; img.style.display='block'; toast('✅ QR Code gerado!'); };
+  img.onerror=()=>{ loading.innerHTML='<div>⚠️ Sem internet. <a href="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+encodeURIComponent(url)+'" target="_blank">Clique aqui</a></div>'; };
+  img.src=src;
+}
+function imprimirQR(){
+  if(!qrUrl){ toast('⚠️ Gere o QR Code primeiro!'); return; }
+  const src=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrUrl)}&color=1a3352&bgcolor=ffffff&margin=4`;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>QR Code</title><style>body{text-align:center;font-family:Georgia,serif;padding:40px;}.frame{display:inline-block;border:4px solid #1a3352;border-radius:14px;padding:12px;}</style></head><body><div style="font-size:36px;">✝</div><h2 style="color:#1a3352;">É sua primeira vez conosco?</h2><p style="color:#6b7280;margin-bottom:20px;">Faça seu cadastro e receba nosso acolhimento.</p><div class="frame"><img src="${src}" width="260" height="260"/></div><p style="margin-top:12px;font-size:12px;color:#9ca3af;">${qrUrl}</p><script>window.onload=function(){setTimeout(function(){window.print();},800);}<\/script></body></html>`);
+  w.document.close();
+}
+function abrirQR(){
+  if(!qrUrl){ toast('⚠️ Gere o QR Code primeiro!'); return; }
+  window.open(`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(qrUrl)}&color=1a3352&bgcolor=ffffff&margin=4`,'_blank');
+}
+
+// ── HELPERS ──────────────────────────────────────────────
+function getSt(v){ return STS.find(s=>s.v===v)||STS[0]; }
+function getMsg(v){
+  const n=v.nome.split(' ')[0];
+  const t=v.oracao?MSGS.oracao:(v.celula==='sim'||v.celula==='qs')?MSGS.celula:v.ev?MSGS.ev:MSGS.neo;
+  return t.replace('[Nome]',n);
+}
+function waLink(cel,msg){ return `https://wa.me/55${cel.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`; }
+function comoL(c){ return {primeiro:'1ª visita',convite:'Convite',redes:'Redes sociais',evento:'Evento',perto:'Mora perto',outro:'Outro'}[c]||c; }
+function celulaL(c){ return {sim:'✅ Sim',nao:'Não',qs:'❓ Quer saber mais'}[c]||c; }
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2400);
+}
+function copiar(txt){
+  navigator.clipboard.writeText(txt)
+    .then(()=>toast('✅ Copiado!'))
+    .catch(()=>{
+      const ta=document.createElement('textarea');
+      ta.value=txt; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta); toast('✅ Copiado!');
+    });
+}
+
+// ── ADMIN: STATS ─────────────────────────────────────────
+function renderStats(){
+  const d=[
+    {l:'Total',n:vs.length,c:'#1a3352'},
+    {l:'Evangélicos',n:vs.filter(v=>v.ev).length,c:'#3b82f6'},
+    {l:'Não Evang.',n:vs.filter(v=>!v.ev).length,c:'#f59e0b'},
+    {l:'Oração',n:vs.filter(v=>v.oracao).length,c:'#ec4899'},
+    {l:'Acompanham.',n:vs.filter(v=>v.acomp).length,c:'#8b5cf6'},
+    {l:'Célula (Sim)',n:vs.filter(v=>v.celula==='sim').length,c:'#10b981'},
+    {l:'Quer Saber',n:vs.filter(v=>v.celula==='qs').length,c:'#6366f1'},
+    {l:'Consolidados',n:vs.filter(v=>v.st==='consolidado').length,c:'#059669'},
+  ];
+  document.getElementById('statsbox').innerHTML=d.map(i=>`
+    <div class="sc2" style="border-color:${i.c}25;">
+      <div class="sn" style="color:${i.c};">${i.n}</div>
+      <div class="sl">${i.l}</div>
+    </div>`).join('');
+}
+
+// ── ADMIN: FILTROS ────────────────────────────────────────
+function renderStFilters(){
+  document.getElementById('stfilters').innerHTML=
+    [{v:'todos',l:'Todos os Status'},...STS].map(s=>
+      `<button type="button" class="fb ${fs===s.v?'on':''}" onclick="setFS('${s.v}')">${s.l}</button>`
+    ).join('');
+}
+function setFT(val,btn){
+  ft=val;
+  document.querySelectorAll('[data-f]').forEach(b=>b.classList.toggle('on',b.dataset.f===val));
+  renderV();
+}
+function setFS(val){ fs=val; renderStFilters(); renderV(); }
+
+// ── ADMIN: LISTA DE VISITANTES ────────────────────────────
+function renderV(){
+  const q=(document.getElementById('busca')||{value:''}).value.toLowerCase();
+  const list=vs.filter(v=>{
+    const mq=v.nome.toLowerCase().includes(q)||v.cel.includes(q);
+    const mf=ft==='todos'
+      ||(ft==='ev'&&v.ev)
+      ||(ft==='neo'&&!v.ev)
+      ||(ft==='oracao'&&!!v.oracao)
+      ||(ft==='acomp'&&v.acomp)
+      ||(ft==='celulaSim'&&v.celula==='sim')
+      ||(ft==='celulaQs'&&v.celula==='qs');
+    const ms=fs==='todos'||v.st===fs;
+    return mq&&mf&&ms;
+  });
+
+  const el=document.getElementById('vlist');
+  if(!list.length){
+    el.innerHTML='<div style="text-align:center;padding:44px;color:#9ca3af;font-size:15px;">Nenhum visitante encontrado.</div>';
+    return;
+  }
+
+  el.innerHTML='';
+  list.forEach(v=>{
+    const card=criarCard(v);
+    el.appendChild(card);
+  });
+}
+
+function criarCard(v){
+  const so=getSt(v.st);
+  const isOpen=openId===v.id;
+  const msg=getMsg(v);
+
+  const card=document.createElement('div');
+  card.className='vcard';
+  card.id='vcard-'+v.id;
+  card.style.borderLeft=`4px solid ${v.ev?'#3b82f6':'#f59e0b'}`;
+
+  // Badges categorias adicionais
+  const catBadges=[];
+  if(v.oracao) catBadges.push('<span class="badge-cat badge cC">🙏 Oração</span>');
+  if(v.acomp) catBadges.push('<span class="badge-cat badge cD">👋 Acomp.</span>');
+  if(v.celula==='sim') catBadges.push('<span class="badge-cat badge cE">🏠 Célula ✅</span>');
+  if(v.celula==='qs') catBadges.push('<span class="badge-cat badge cEQ">🏠 Quer Saber</span>');
+
+  card.innerHTML=`
+    <!-- TOPO -->
+    <div class="v-top">
+      <div>
+        <div class="v-nome">${v.nome}</div>
+        <div class="v-badges">
+          <span class="badge ${v.ev?'badge-ev':'badge-neo'}">${v.ev?'✝ Evangélico':'🌱 Não Evangélico'}</span>
+          <span class="badge-status" style="background:${so.c}18;color:${so.c};">${so.l}</span>
+          ${catBadges.join('')}
+        </div>
+      </div>
+      <span class="v-equipe">${v.eq||'—'}</span>
+    </div>
+
+    <!-- CELULAR + BOTÕES -->
+    <div class="v-cel-row">
+      <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:150px;">
+        <span style="font-size:20px;">📱</span>
+        <div>
+          <div class="v-cel-num">${v.cel}</div>
+          <div class="v-cel-data">📅 Visita: ${v.data}</div>
+        </div>
+      </div>
+      <div class="v-btns">
+        <a href="${waLink(v.cel,msg)}" target="_blank">
+          <button type="button" class="btn btn-green btn-sm">💚 WhatsApp</button>
+        </a>
+        <button type="button" class="btn btn-navy btn-sm" data-id="${v.id}" onclick="copiarMsgId(${v.id})">📋 Copiar Msg</button>
+      </div>
+    </div>
+
+    <!-- PEDIDO DE ORAÇÃO -->
+    ${v.oracao?`
+    <div class="v-oracao">
+      <span style="font-size:20px;flex-shrink:0;">🙏</span>
+      <div>
+        <div class="v-oracao-label">Pedido de Oração</div>
+        <div class="v-oracao-text">${v.oracao}</div>
+      </div>
+    </div>`:''}
+
+    <!-- TOGGLE -->
+    <button type="button" class="v-toggle" data-id="${v.id}" onclick="toggleCard(${v.id})">
+      ${isOpen?'▲ Fechar detalhes':'▼ Ver detalhes completos e acompanhamento'}
+    </button>
+
+    <!-- PAINEL EXPANDIDO -->
+    <div class="v-detail" id="detail-${v.id}" style="${isOpen?'':'display:none;'}">
+      <div class="dg">
+        <div><div class="dil">Evangélico</div><div class="div2" style="color:${v.ev?'#3b82f6':'#f59e0b'};">${v.ev?'✝ Sim':'🌱 Não'}</div></div>
+        <div><div class="dil">Congrega</div><div class="div2">${v.cong?'Sim — '+(v.ig||'?'):'Não'}</div></div>
+        <div><div class="dil">Acompanham.</div><div class="div2" style="color:${v.acomp?'#059669':'#9ca3af'};">${v.acomp?'✅ Sim':'❌ Não'}</div></div>
+        <div><div class="dil">Célula</div><div class="div2">${celulaL(v.celula)}</div></div>
+        <div><div class="dil">Como Conheceu</div><div class="div2">${comoL(v.como)}</div></div>
+        <div><div class="dil">Msgs Enviadas</div><div class="div2">${v.msgs.filter(m=>m.ok).length}</div></div>
+      </div>
+      <div class="cr">
+        <div class="ci">
+          <div class="cil">Status</div>
+          <select class="sel-input" onchange="updV(${v.id},'st',this.value)">
+            ${STS.map(s=>`<option value="${s.v}"${v.st===s.v?' selected':''}>${s.l}</option>`).join('')}
+          </select>
+        </div>
+        <div class="ci">
+          <div class="cil">Equipe</div>
+          <select class="sel-input" onchange="updV(${v.id},'eq',this.value)">
+            ${EQS.map(e=>`<option${v.eq===e?' selected':''}>${e}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:13px;">
+        <div class="cil" style="margin-bottom:7px;">💬 Mensagem pronta para WhatsApp</div>
+        <div class="msg-box">${msg}</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-gold btn-sm" onclick="copiarMsgId(${v.id})">📋 Copiar</button>
+          <a href="${waLink(v.cel,msg)}" target="_blank">
+            <button type="button" class="btn btn-green btn-sm">💚 Abrir WhatsApp</button>
+          </a>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="marcarEnviada(${v.id})">✅ Marcar Enviada</button>
+        </div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div class="cil" style="margin-bottom:5px;">📝 Observações da equipe</div>
+        <textarea class="nta" placeholder="Anote aqui o acompanhamento..." onchange="updV(${v.id},'notas',this.value)">${v.notas}</textarea>
+      </div>
+      ${v.msgs.length?`
+      <div>
+        <div class="cil" style="margin-bottom:5px;">📨 Histórico</div>
+        ${v.msgs.map(m=>`
+        <div style="display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid #f3f4f6;font-size:12px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:${m.ok?'#059669':'#d1d5db'};flex-shrink:0;display:inline-block;"></span>
+          Dia ${m.d} — ${m.ok?'Enviada':'Pendente'}
+        </div>`).join('')}
+      </div>`:''}
+    </div>
+  `;
+
+  return card;
+}
+
+function toggleCard(id){
+  const detail=document.getElementById('detail-'+id);
+  const card=document.getElementById('vcard-'+id);
+  const btn=card.querySelector('.v-toggle');
+  if(openId===id){
+    openId=null;
+    detail.style.display='none';
+    btn.textContent='▼ Ver detalhes completos e acompanhamento';
+    card.classList.remove('op');
+  } else {
+    // Fecha o anterior
+    if(openId){
+      const prev=document.getElementById('detail-'+openId);
+      const prevCard=document.getElementById('vcard-'+openId);
+      if(prev) prev.style.display='none';
+      if(prevCard){
+        prevCard.classList.remove('op');
+        const pb=prevCard.querySelector('.v-toggle');
+        if(pb) pb.textContent='▼ Ver detalhes completos e acompanhamento';
+      }
+    }
+    openId=id;
+    detail.style.display='block';
+    btn.textContent='▲ Fechar detalhes';
+    card.classList.add('op');
+  }
+}
+
+function copiarMsgId(id){
+  const v=vs.find(x=>x.id===id);
+  if(v) copiar(getMsg(v));
+}
+
+function updV(id,campo,val){
+  vs=vs.map(v=>v.id===id?{...v,[campo]:val}:v);
+  save(); renderStats();
+  // Atualiza apenas o badge de status no card sem re-renderizar tudo
+  const card=document.getElementById('vcard-'+id);
+  if(card&&campo==='st'){
+    const so=getSt(val);
+    const badge=card.querySelector('.badge-status');
+    if(badge){ badge.textContent=so.l; badge.style.background=so.c+'18'; badge.style.color=so.c; }
+  }
+  if(card&&campo==='eq'){
+    const eqEl=card.querySelector('.v-equipe');
+    if(eqEl) eqEl.textContent=val||'—';
+  }
+}
+
+function marcarEnviada(id){
+  vs=vs.map(v=>{ if(v.id===id){ return {...v,msgs:[...v.msgs,{d:'?',ok:true}]}; } return v; });
+  save(); toast('✅ Mensagem marcada como enviada!');
+  renderV();
+}
+
+// ── RELATÓRIOS ────────────────────────────────────────────
+function renderRel(){
+  const tot=vs.length||1;
+  const bars=[
+    {l:'Evangélicos',v:vs.filter(v=>v.ev).length,c:'#3b82f6'},
+    {l:'Não Evangélicos',v:vs.filter(v=>!v.ev).length,c:'#f59e0b'},
+    {l:'Pedidos Oração',v:vs.filter(v=>v.oracao).length,c:'#ec4899'},
+    {l:'Acompanham.',v:vs.filter(v=>v.acomp).length,c:'#8b5cf6'},
+    {l:'Célula (Sim)',v:vs.filter(v=>v.celula==='sim').length,c:'#10b981'},
+    {l:'Quer Saber Mais',v:vs.filter(v=>v.celula==='qs').length,c:'#6366f1'},
+    {l:'Consolidados',v:vs.filter(v=>v.st==='consolidado').length,c:'#059669'},
+  ];
+  const bySt=STS.map(s=>({...s,n:vs.filter(v=>v.st===s.v).length})).filter(s=>s.n>0);
+  document.getElementById('relbox').innerHTML=`
+    <div class="rc">
+      <div class="rtit">📊 Indicadores do Mês</div>
+      ${bars.map(b=>`
+        <div class="brow">
+          <div class="blr">
+            <span style="color:#374151;font-weight:500;">${b.l}</span>
+            <span style="color:${b.c};font-weight:700;">${b.v}/${vs.length}</span>
+          </div>
+          <div class="btr">
+            <div class="bf" style="width:${Math.max(4,Math.round(b.v/tot*100))}%;background:${b.c};">
+              ${b.v>0?`<span>${Math.round(b.v/tot*100)}%</span>`:''}
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="rc">
+      <div class="rtit">📋 Por Status</div>
+      ${bySt.map(s=>`
+        <div class="srow">
+          <span class="badge" style="background:${s.c}18;color:${s.c};">${s.l}</span>
+          <span style="font-size:24px;font-weight:700;color:${s.c};">${s.n}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+// ── MENSAGENS ─────────────────────────────────────────────
+function renderMsgs(){
+  const ms=[
+    {t:'✝ Visitante Evangélico',k:'ev'},
+    {t:'🌱 Visitante Não Evangélico',k:'neo'},
+    {t:'🙏 Pedido de Oração',k:'oracao'},
+    {t:'🏠 Interesse em Célula',k:'celula'},
+    {t:'🌟 Boas-Vindas Geral',k:'bv'},
+  ];
+  document.getElementById('msgbox').innerHTML=ms.map(m=>`
+    <div class="mt">
+      <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:9px;">${m.t}</div>
+      <div class="msg-box">${MSGS[m.k]}</div>
+      <button type="button" class="btn btn-gold btn-sm" onclick="copiar(MSGS['${m.k}'])">📋 Copiar Mensagem</button>
+    </div>`).join('');
+}
+
+// ── EQUIPES ───────────────────────────────────────────────
+function renderTeams(){
+  document.getElementById('teambox').innerHTML=EQS.map(e=>{
+    const tot=vs.filter(v=>v.eq===e).length;
+    const ativ=vs.filter(v=>v.eq===e&&!['finalizado','consolidado'].includes(v.st)).length;
+    return `<div class="tc">
+      <div style="font-size:26px;margin-bottom:7px;">${EICONS[e]||'👥'}</div>
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:9px;">${e}</div>
+      <div style="display:flex;justify-content:center;gap:16px;">
+        <div><div style="font-size:26px;font-weight:700;color:var(--navy);">${tot}</div><div style="font-size:10px;color:#9ca3af;">Total</div></div>
+        <div><div style="font-size:26px;font-weight:700;color:var(--amber);">${ativ}</div><div style="font-size:10px;color:#9ca3af;">Ativos</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── EXPORTAR CSV ──────────────────────────────────────────
+function exportCSV(){
+  const h=['Nome','Celular','Evangélico','Congrega','Igreja','Acompanham.','Pedido Oração','Como Conheceu','Célula','Data','Status','Equipe','Notas'];
+  const rows=vs.map(v=>[v.nome,v.cel,v.ev?'Sim':'Não',v.cong?'Sim':'Não',v.ig,v.acomp?'Sim':'Não',v.oracao,comoL(v.como),celulaL(v.celula),v.data,getSt(v.st).l,v.eq,v.notas].map(f=>`"${(f||'').replace(/"/g,'""')}"`));
+  const csv=[h.join(','),...rows.map(r=>r.join(','))].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download=`visitantes-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click(); toast('📥 CSV exportado!');
+}
+
+function limparDados(){
+  if(confirm('Apagar TODOS os visitantes? Esta ação não pode ser desfeita.')){
+    vs=[]; save(); renderStats(); renderV(); renderRel(); renderTeams();
+    toast('🗑️ Dados apagados.');
+  }
+}
+
+// ── INIT ─────────────────────────────────────────────────
+window.onload=function(){
+  document.getElementById('qrimg').style.display='none';
+  document.getElementById('qurl').value='https://melquibispo.github.io/Betania/visitantes-betania-v3.html';
+};
+</script>
+</body>
+</html>
