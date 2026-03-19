@@ -368,6 +368,9 @@ textarea{resize:vertical;min-height:76px;}
       <div>
         <h2 style="color:var(--navy);font-size:24px;">Painel Administrativo</h2>
         <p style="color:var(--gray);font-size:13px;margin-top:2px;">Igreja Betânia — Gestão de Visitantes</p>
+        <div id="sheets-status" style="margin-top:6px;font-size:12px;padding:4px 10px;border-radius:20px;display:inline-block;background:#fef3c7;color:#92400e;">
+          ⚠️ Google Sheets não configurado
+        </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button type="button" class="btn btn-ghost" onclick="exportCSV()">📥 Exportar CSV</button>
@@ -448,6 +451,13 @@ textarea{resize:vertical;min-height:76px;}
 
 <!-- ═══════ JAVASCRIPT ═══════ -->
 <script>
+// ╔══════════════════════════════════════════════════════════╗
+// ║  COLE O LINK DO GOOGLE APPS SCRIPT AQUI EMBAIXO         ║
+// ║  Apague apenas o texto: COLE_SEU_LINK_AQUI              ║
+// ║  e cole o link que o Google gerou no lugar              ║
+// ╚══════════════════════════════════════════════════════════╝
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxME4ZwOsJS9FzbeXLoVUWLMSszUpsfHtHstam3de4MWmFYf4C-5uRJl2MzjMX5QHnz/exec';
+// ════════════════════════════════════════════════════════════
 // ── DADOS ────────────────────────────────────────────────
 const STS=[
   {v:'novo',l:'Novo Visitante',c:'#3b82f6'},
@@ -543,7 +553,28 @@ function enviar(){
   document.querySelectorAll('.rb.on,.gob.on').forEach(b=>b.classList.remove('on'));
   document.getElementById('fconsent').checked=false;
   document.getElementById('figwrap').classList.add('hid');
+
+  // Envia para Google Sheets se o link estiver configurado
+  if(SCRIPT_URL && SCRIPT_URL !== 'COLE_SEU_LINK_AQUI'){
+    enviarParaSheets(v);
+  }
+
   showPg('sucesso');
+}
+
+// Envia cadastro para Google Sheets via Apps Script
+function enviarParaSheets(v){
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(v)
+  }).then(()=>{
+    console.log('✅ Enviado para Google Sheets');
+  }).catch(err=>{
+    console.warn('⚠️ Erro ao enviar para Sheets:', err);
+    // Não bloqueia o fluxo — dados já salvos localmente
+  });
 }
 
 // ── QR CODE ──────────────────────────────────────────────
@@ -929,7 +960,17 @@ function limparDados(){
 // ── INIT ─────────────────────────────────────────────────
 window.onload=function(){
   document.getElementById('qrimg').style.display='none';
-  document.getElementById('qurl').value='https://melquibispo.github.io/Betania/visitantes-betania-v3.html';
+  document.getElementById('qurl').value='https://melquibispo.github.io/Betania/visitantes-betania-v4.html';
+
+  // Mostra status da integração com Sheets
+  const statusEl=document.getElementById('sheets-status');
+  if(statusEl){
+    if(SCRIPT_URL && SCRIPT_URL!=='COLE_SEU_LINK_AQUI'){
+      statusEl.style.background='#d1fae5';
+      statusEl.style.color='#065f46';
+      statusEl.textContent='✅ Google Sheets conectado';
+    }
+  }
 };
 </script>
 </body>
